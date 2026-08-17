@@ -6,6 +6,7 @@ license.workspace = true
 repository.workspace = true
 authors.workspace = true
 description = "Core Yin-Yang, Wu Xing, Heavenly Stems, Earthly Branches, and sexagenary-cycle primitives"
+readme = "README.md"
 keywords = ["yinyang", "wuxing", "ganzhi", "cosmology"]
 
 [dependencies]

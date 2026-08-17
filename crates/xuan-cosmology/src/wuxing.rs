@@ -1,7 +1,6 @@
 use super::{Labeled, ToKey};
 
-// VN: Ngũ Hành.
-// CN: 五行
+/// The Five Phases (Wu Xing) plus an explicit unknown value.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum WuXing {
     Wood,
@@ -12,17 +11,22 @@ pub enum WuXing {
     Unknown,
 }
 
-// VN: Quan hệ giữa các Ngũ Hành.
-// CN: 五行之间的关系
+/// Directional relationship from one Five-Phase value to another.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum WuxingRelation {
+    /// Generating / nourishing relation (sheng).
     Sheng,
+    /// Overcoming / controlling relation (ke).
     Ke,
+    /// Same phase.
     TongXing,
+    /// No direct generating, overcoming, or same-phase relation.
     Neutral,
 }
 
 impl WuXing {
+    /// Return whether `self` generates `other` in the canonical sheng cycle:
+    /// Wood -> Fire -> Earth -> Metal -> Water -> Wood.
     pub fn generates(self, other: WuXing) -> bool {
         matches!(
             (self, other),
@@ -34,6 +38,8 @@ impl WuXing {
         )
     }
 
+    /// Return whether `self` overcomes `other` in the canonical ke cycle:
+    /// Wood -> Earth -> Water -> Fire -> Metal -> Wood.
     pub fn overcomes(self, other: WuXing) -> bool {
         matches!(
             (self, other),
@@ -45,6 +51,7 @@ impl WuXing {
         )
     }
 
+    /// Classify the directed relationship from `self` to `other`.
     pub fn relation_to(self, other: WuXing) -> WuxingRelation {
         if self == other {
             WuxingRelation::TongXing
@@ -95,6 +102,7 @@ impl Labeled for WuXing {
     }
 }
 
+/// Five-Phase Bureau values represented by their traditional numeric labels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum WuxingJu {
     Water2,

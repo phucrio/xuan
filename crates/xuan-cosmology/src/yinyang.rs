@@ -1,5 +1,6 @@
 use super::{HasYinYang, Labeled, ToKey};
 
+/// Yin/Yang polarity with an explicit unknown state for incomplete data.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum YinYang {
     Yang,
@@ -41,6 +42,7 @@ impl HasYinYang for YinYang {
     }
 }
 
+/// Strategy trait for values whose polarity is derived rather than stored.
 pub trait YinYangRule {
     fn yin_yang(&self) -> YinYang;
 }

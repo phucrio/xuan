@@ -49,14 +49,11 @@ println!("{:?}", ganzhi);
 
 ## Algorithm documentation
 
-The lunisolar implementation, provenance boundary, differences from common reference
-implementations, and accuracy limitations are documented in two maintained versions:
+The lunisolar model, reimplemented components, differences from common reference
+approaches, and accuracy notes are documented in two maintained versions:
 
 - **English (default):** [`docs/lunisolar-calendar.md`](docs/lunisolar-calendar.md)
 - **Tiếng Việt:** [`docs/lunisolar-calendar.vi.md`](docs/lunisolar-calendar.vi.md)
-
-The documentation is written specifically for this crate. It does not redistribute the
-prose or source code of external calendar implementations.
 
 ## Implementation model
 
@@ -73,7 +70,7 @@ Julian Day Number arithmetic, not automatic switching to the historical Julian c
 The astronomical layer uses compact approximations rather than a high-precision ephemeris.
 The regression suite includes selected cases from 1800 through 2620, but that span is test
 coverage rather than a guarantee for every date in the interval. Boundary-sensitive,
-historical, or far-future results should be validated against an authoritative ephemeris
+historical, or far-future results should be cross-checked against an appropriate ephemeris
 or trusted calendar oracle when high confidence is required.
 
 See [the algorithm documentation](docs/lunisolar-calendar.md#accuracy-and-validation) for
@@ -92,7 +89,3 @@ cargo test --workspace --all-features
 ## License
 
 Licensed under either Apache-2.0 or MIT, at your option.
-
-External references listed in the algorithm documentation retain their own copyright and
-license terms; their inclusion as references does not relicense them under this crate's
-license.

@@ -1,32 +1,30 @@
 use super::{WuXing, YinYang};
 
-/// VN: Trait cho các đối tượng có thuộc tính Ngũ Hành.
-/// CN: 具有五行属性的对象的特征
+/// Implemented by values that expose a Five-Phase association.
 pub trait HasWuXing {
     fn wuxing(&self) -> WuXing;
 }
 
-/// VN: Trait cho các đối tượng có thuộc tính Âm Dương.
-/// CN: 具有阴阳属性的对象的特征
+/// Implemented by values that expose a yin/yang association.
 pub trait HasYinYang {
     fn yin_yang(&self) -> YinYang;
 }
 
-/// VN: Trait chuyển đối tượng thành string key.
-/// CN: 将对象转换为字符串键的特征
+/// Stable lowercase key used for serialization-adjacent and UI-neutral lookup.
 pub trait ToKey {
     fn to_key(&self) -> &'static str;
 }
 
-/// VN: Trait lấy nhãn hiển thị đa ngôn ngữ.
-/// CN: 获取多语言显示标签的特征
+/// Human-readable Vietnamese and Chinese labels.
 pub trait Labeled {
     fn label_vn(&self) -> &'static str;
     fn label_cn(&self) -> &'static str;
 }
 
-/// VN: Trait cho các đối tượng có chu kỳ như Thiên Can, Địa Chi.
-/// CN: 具有周期属性的对象的特征（如天干、地支）
+/// Common operations for finite ordered cycles such as stems and branches.
+///
+/// Implementors must return `cycle()` in the same order represented by
+/// `index()`. The default methods depend on that invariant for wrap-around.
 pub trait CyclicIndex: Copy + Sized + 'static {
     const CYCLE_LEN: usize;
     fn cycle() -> &'static [Self];
@@ -46,6 +44,10 @@ pub trait CyclicIndex: Copy + Sized + 'static {
         self.shift(-1)
     }
 
+    /// Return the element half a cycle away.
+    ///
+    /// This assumes an even-length cycle, which is true for the cycles that
+    /// implement this trait in the crate.
     fn opposite(self) -> Self {
         self.shift(Self::CYCLE_LEN as i32 / 2)
     }

@@ -1,3 +1,8 @@
+//! Julian Day helpers used by the calendar algorithms.
+//!
+//! This module deliberately uses the proleptic Gregorian calendar throughout.
+//! It does not model the historical Julian-to-Gregorian cutover.
+
 use super::solar::{CivilDate, CivilTime};
 
 /// Convert a Gregorian date to a Julian Day Number (JDN) at 00:00.
@@ -9,6 +14,8 @@ pub fn gregorian_to_jdn(date: CivilDate) -> i64 {
     let m = date.month as i64;
     let d = date.day as i64;
 
+    // Re-index January and February as months 13 and 14 of the previous year.
+    // This is the standard March-based form of the Gregorian JDN conversion.
     let a = (14 - m) / 12;
     let y2 = y + 4800 - a;
     let m2 = m + 12 * a - 3;
@@ -16,6 +23,7 @@ pub fn gregorian_to_jdn(date: CivilDate) -> i64 {
     d + (153 * m2 + 2) / 5 + 365 * y2 + y2 / 4 - y2 / 100 + y2 / 400 - 32045
 }
 
+/// Inverse of `gregorian_to_jdn` for the proleptic Gregorian calendar.
 fn jdn_to_gregorian(jdn: i64) -> CivilDate {
     let a = jdn + 32044;
     let b = (4 * a + 3) / 146097;
@@ -33,6 +41,9 @@ fn jdn_to_gregorian(jdn: i64) -> CivilDate {
 }
 
 /// Add days in the proleptic Gregorian calendar via JDN arithmetic.
+///
+/// Converting through an integer day number keeps month lengths and leap-year
+/// rules out of the caller and avoids hand-written rollover logic.
 pub fn add_days_gregorian(date: CivilDate, days: i32) -> CivilDate {
     let jdn = gregorian_to_jdn(date);
     let jdn2 = jdn + days as i64;
@@ -40,11 +51,16 @@ pub fn add_days_gregorian(date: CivilDate, days: i32) -> CivilDate {
 }
 
 /// Convert a Gregorian local date/time to Julian Day.
+///
+/// This function does not apply a time-zone offset. Callers that need a UTC JD
+/// must subtract their explicit local offset after this conversion.
 pub fn gregorian_to_jd(date: CivilDate, time: CivilTime) -> f64 {
     let mut y = date.year as i64;
     let mut m = date.month as i64;
     let d = date.day as f64;
 
+    // Astronomical JD formulas treat January and February as part of the
+    // previous computational year so the leap-day correction is uniform.
     if m <= 2 {
         y -= 1;
         m += 12;
@@ -52,6 +68,8 @@ pub fn gregorian_to_jd(date: CivilDate, time: CivilTime) -> f64 {
 
     let a = y / 100;
     let b = 2 - a + a / 4;
+
+    // `CivilTime` has minute resolution, so seconds are intentionally absent.
     let day_fraction = time.hour as f64 / 24.0 + time.minute as f64 / 1440.0;
 
     (365.25 * (y as f64 + 4716.0)).floor()
@@ -64,6 +82,8 @@ pub fn gregorian_to_jd(date: CivilDate, time: CivilTime) -> f64 {
 
 /// Convert Julian Day to a Gregorian date and minute-resolution time.
 pub fn jd_to_gregorian(jd: f64) -> (CivilDate, CivilTime) {
+    // JD changes integer value at noon. Adding 0.5 aligns the integer portion
+    // with a civil-midnight boundary before splitting date and time fractions.
     let z = (jd + 0.5).floor();
     let f = (jd + 0.5) - z;
 
@@ -93,6 +113,8 @@ pub fn jd_to_gregorian(jd: f64) -> (CivilDate, CivilTime) {
     let mut hour = day_fraction.floor() as i32;
     let mut minute = ((day_fraction - hour as f64) * 60.0).round() as i32;
 
+    // Floating-point rounding can produce xx:60 or 24:00 at an exact boundary.
+    // Normalize those values before constructing the minute-resolution result.
     if minute == 60 {
         minute = 0;
         hour += 1;

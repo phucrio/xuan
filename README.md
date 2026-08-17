@@ -2,7 +2,7 @@
 
 Reusable Rust building blocks for traditional calendrical and correlative-cosmology systems.
 
-`xuan` is intentionally a small, deterministic foundation. Product-specific Zi Wei, I Ching, trading, UI, and runtime logic belong in downstream repositories rather than this workspace.
+`xuan` provides small, deterministic crates with explicit domain boundaries and composable APIs.
 
 ## Crates
 

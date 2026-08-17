@@ -2,14 +2,15 @@
 
 ## Scope
 
-This repository contains reusable public Rust crates. Keep the workspace deterministic, side-effect free at the core, and independent from downstream applications.
+This repository contains reusable public Rust crates. Keep the workspace deterministic, focused, and side-effect free at the core.
 
 ## Architecture
 
 - `xuan-cosmology` is the lowest-level domain primitive crate.
 - `xuan-calendar` may depend on `xuan-cosmology`.
 - `xuan-cosmology` must not depend on `xuan-calendar`.
-- Do not add Zi Wei-specific chart/rule logic, I Ching trading logic, UI code, network access, filesystem access, hidden system-time dependencies, or other product-specific behavior to the shared foundation.
+- Keep public APIs data-oriented and reusable.
+- Avoid ambient I/O, hidden runtime state, randomness, or implicit system-time dependencies in core calculations.
 
 ## Quality gate
 

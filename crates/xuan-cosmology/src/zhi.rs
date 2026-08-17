@@ -2,8 +2,10 @@ use crate::traits::{CyclicIndex, HasWuXing, HasYinYang, Labeled, ToKey};
 use crate::wuxing::WuXing;
 use crate::yinyang::YinYang;
 
-// VN: Địa Chi - 12 chi trong hệ Can-Chi.
-// CN: 地支 - 干支系统中的十二支
+/// The twelve Earthly Branches in canonical cycle order.
+///
+/// The discriminant is the zero-based branch index and is used directly by
+/// hour, month, and sexagenary-cycle calculations.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DiZhi {
@@ -41,12 +43,14 @@ impl DiZhi {
         self as usize
     }
 
+    /// Shift by a signed number of branch positions with wrap-around.
     pub fn shift(self, offset: i32) -> DiZhi {
         let idx = self.index() as i32;
         let new_idx = (idx + offset).rem_euclid(12);
         DIZHI_CYCLE[new_idx as usize]
     }
 
+    /// Yin/yang alternates across the branch cycle, beginning with Yang at Zi.
     pub fn yin_yang(self) -> YinYang {
         if self.index().is_multiple_of(2) {
             YinYang::Yang
@@ -55,6 +59,10 @@ impl DiZhi {
         }
     }
 
+    /// Five-Phase association of the Earthly Branches.
+    ///
+    /// Yin/Mao are Wood, Si/Wu Fire, Shen/You Metal, Hai/Zi Water, while the
+    /// four transition/storage branches Chen/Xu/Chou/Wei are Earth.
     pub fn wuxing(self) -> WuXing {
         match self {
             DiZhi::Yin | DiZhi::Mao => WuXing::Wood,

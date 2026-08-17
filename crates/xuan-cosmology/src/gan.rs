@@ -2,21 +2,23 @@ use crate::traits::{CyclicIndex, HasWuXing, HasYinYang, Labeled, ToKey};
 use crate::wuxing::WuXing;
 use crate::yinyang::YinYang;
 
-// VN: Thiên Can - 10 can trong hệ Can-Chi
-// CN: 天干 - 干支系统中的十干
+/// The ten Heavenly Stems in canonical cycle order.
+///
+/// The discriminant is the zero-based cycle index and is relied on by cyclic
+/// arithmetic throughout the crate.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TianGan {
-    Jia,  // 甲 / 甲 / Giáp
-    Yi,   // 乙 / 乙 / Ất
-    Bing, // 丙 / 丙 / Bính
-    Ding, // 丁 / 丁 / Đinh
-    Wu,   // 戊 / 戊 / Mậu
-    Ji,   // 己 / 己 / Kỷ
-    Geng, // 庚 / 庚 / Canh
-    Xin,  // 辛 / 辛 / Tân
-    Ren,  // 壬 / 壬 / Nhâm
-    Gui,  // 癸 / 癸 / Quý
+    Jia,  // 甲 / Giáp
+    Yi,   // 乙 / Ất
+    Bing, // 丙 / Bính
+    Ding, // 丁 / Đinh
+    Wu,   // 戊 / Mậu
+    Ji,   // 己 / Kỷ
+    Geng, // 庚 / Canh
+    Xin,  // 辛 / Tân
+    Ren,  // 壬 / Nhâm
+    Gui,  // 癸 / Quý
 }
 
 pub const TIANGAN_CYCLE: [TianGan; 10] = [
@@ -37,14 +39,14 @@ impl TianGan {
         self as usize
     }
 
+    /// Shift by a signed number of positions with wrap-around.
     pub fn shift(self, offset: i32) -> TianGan {
         let idx = self.index() as i32;
         let new_idx = (idx + offset).rem_euclid(10);
         TIANGAN_CYCLE[new_idx as usize]
     }
 
-    // VN: Âm Dương của Thiên Can (chẵn = Dương, lẻ = Âm)
-    // CN: 天干的阴阳（偶数 = 阳, 奇数 = 阴）
+    /// Yin/yang alternates across the stem cycle, beginning with Yang at Jia.
     pub fn yin_yang(self) -> YinYang {
         if self.index().is_multiple_of(2) {
             YinYang::Yang
@@ -53,9 +55,9 @@ impl TianGan {
         }
     }
 
-    // VN: Ngũ Hành của Thiên Can
-    // CN: 天干的五行
-    // Giáp/Ất = Mộc, Bính/Đinh = Hỏa, Mậu/Kỷ = Thổ, Canh/Tân = Kim, Nhâm/Quý = Thủy
+    /// Five-Phase association of the Heavenly Stems.
+    ///
+    /// Each phase owns two adjacent stems: Wood, Fire, Earth, Metal, Water.
     pub fn wuxing(self) -> WuXing {
         match self {
             TianGan::Jia | TianGan::Yi => WuXing::Wood,

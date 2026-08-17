@@ -1,4 +1,8 @@
-//! Core cosmology primitives shared by the Xuan crates.
+//! Deterministic primitives for traditional calendrical and correlative-cosmology systems.
+//!
+//! Public cycle order is part of the crate contract: Heavenly Stems and Earthly
+//! Branches use their canonical order, and downstream index arithmetic assumes
+//! those orders remain stable.
 
 pub mod gan;
 pub mod ganzhi;

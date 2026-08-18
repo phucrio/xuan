@@ -12,6 +12,13 @@ This repository contains reusable public Rust crates. Keep the workspace determi
 - Keep public APIs data-oriented and reusable.
 - Avoid ambient I/O, hidden runtime state, randomness, or implicit system-time dependencies in core calculations.
 
+## Release tags
+
+- Each crate is versioned and released independently.
+- Release tags must follow `<crate-name>-v<semver>`.
+- Examples: `xuan-cosmology-v0.1.0`, `xuan-calendar-v0.1.0`.
+- Do not create workspace-wide version tags such as `0.1.0` or `v0.1.0`.
+
 ## Quality gate
 
 Before committing, run:

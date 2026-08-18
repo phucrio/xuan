@@ -5,7 +5,8 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 authors.workspace = true
-description = "Deterministic Gregorian, Julian, lunisolar, and GanZhi calendar calculations"
+description = "Deterministic Vietnamese and Chinese lunisolar, Gregorian, Julian, and GanZhi calendar calculations"
+readme = "README.md"
 keywords = ["calendar", "lunisolar", "ganzhi", "julian"]
 
 [dependencies]

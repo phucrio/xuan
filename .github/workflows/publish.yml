@@ -104,21 +104,40 @@ jobs:
             ensure_github_release "${package}" "${version}"
           }
 
+          sparse_index_path() {
+            local package="${1,,}"
+            local length="${#package}"
+
+            case "${length}" in
+              1) printf '1/%s' "${package}" ;;
+              2) printf '2/%s' "${package}" ;;
+              3) printf '3/%s/%s' "${package:0:1}" "${package}" ;;
+              *) printf '%s/%s/%s' "${package:0:2}" "${package:2:2}" "${package}" ;;
+            esac
+          }
+
           wait_for_registry_version() {
             local package="$1"
             local version="$2"
+            local index_path
+            local index_url
 
-            for attempt in {1..18}; do
-              if cargo search "${package}" --limit 1 | grep -F "${package} = \"${version}\"" >/dev/null; then
-                echo "${package} ${version} is visible in the crates.io index"
+            index_path="$(sparse_index_path "${package}")"
+            index_url="https://index.crates.io/${index_path}"
+
+            for attempt in {1..30}; do
+              if curl --fail --silent --show-error --location \
+                --header 'Cache-Control: no-cache' \
+                "${index_url}" | grep -F "\"vers\":\"${version}\"" >/dev/null; then
+                echo "${package} ${version} is visible in the crates.io sparse index"
                 return 0
               fi
 
-              echo "Waiting for ${package} ${version} to become visible in crates.io (${attempt}/18)"
+              echo "Waiting for ${package} ${version} in the crates.io sparse index (${attempt}/30)"
               sleep 10
             done
 
-            echo "::error::${package} ${version} did not become visible in crates.io in time"
+            echo "::error::${package} ${version} did not become visible in the crates.io sparse index in time"
             return 1
           }
 
